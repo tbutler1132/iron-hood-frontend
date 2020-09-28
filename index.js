@@ -11,20 +11,28 @@ const renderStocks = (portfolio) => {
 
 
 const renderStock = (stockObj) => {
-    holdingsTable = document.querySelector('.stock-table')
+    holdingsTable = document.querySelector('tbody')
     stockRow = document.createElement('tr')
     stockRow.classList = 'table-row'
     stockRow.innerHTML = `
-        <th>${stockObj.company_name}</th>
-        <th>${stockObj.ticker}</th>
-        <th>${stockObj.price}</th>
-        <th>Sell</th>
+        <td>${stockObj.company_name}</td>
+        <td>${stockObj.ticker}</td>
+        <td id='price'>${stockObj.price}</td>
+        <td id="shares"> 10 </td>
+        <td id='holdings'> shares * price </td>
+        <td data-id='${stockObj.id}'button class="sell-button">Sell</button></td>
     `
+    const shares = stockRow.querySelector('#shares').textContent
+    const price = stockRow.querySelector('#price').textContent
+    const holdings = shares * price
+    const currentHoldings = stockRow.querySelector('#holdings')
+    currentHoldings.innerText = holdings
+    
     holdingsTable.append(stockRow)
 }
 
 const getUsersStocks = () =>{
-    fetch('http://localhost:3000/users/8')
+    fetch('http://localhost:3000/users/9')
     .then(response => response.json())
     .then(user => renderStocks(user.stocks))
 }
@@ -38,10 +46,19 @@ const showStockIndex = () =>{
         tableRows.forEach (row => {row.remove()})
     }
 
+
     const renderStocks = (stockCollection) => {
         stockCollection.forEach(stockObj => {
             renderStock(stockObj)
         })
+        const changeToBuyBotton = () =>{
+            const row = document.querySelectorAll('.table-row')
+            row.forEach(row => {
+            const sellButtons = row.children[5]
+            sellButtons.innerHTML = '<button> Buy </button>' })
+            // sellButtons.forEach(button => {button.textContent = "Buy"})
+        }
+        changeToBuyBotton() 
     }
 
     const getStocks = () =>{
@@ -54,23 +71,30 @@ const showStockIndex = () =>{
     getStocks()
 }
 
-
-
 //Click Handler
 
 const clickHandler = () => {
     document.addEventListener('click', function(e){
-    if (e.target.matches('#buy-button')){
-        header.textContent = "Search"
-        showStockIndex()
-    }
+        if (e.target.matches('#buy-button')){
+            header.textContent = "Search"
+            showStockIndex()
+        }
+        else if (e.target.innerText === 'Buy'){
+            const button = e.target
+            const stockId = button.parentElement.dataset.id
+            const findStock = () => {
+                fetch('http://localhost:3000/stocks/' + stockId)
+                .then(response => response.json())
+                .then(stock => buyStock(stock))
+            }
+            findStock()
+        }
 
     })
 }
 
 
-
-
+// Update User Portfolio
 
 
 

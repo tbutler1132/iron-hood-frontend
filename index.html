@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -9,15 +10,21 @@
 </head>
 <body>
     <h1 class="header">Portfolio</h1>
+    <p class="balance"> Balance: 100,000 </p>
     <div>
       <button id="buy-button">Buy Stock</button>
-      <table style="width:100%" class="stock-table">
-        <tr id="table-header">
-          <th>Stock</th>
-          <th>Ticker</th>
-          <th>Price</th>
-          <th>Sell</th>
-        </tr>
+      <table style="width:100%" class="table">
+        <thead>
+          <tr id="table-header">
+            <th>Stock</th>
+            <th>Ticker</th>
+            <th>Price</th>
+            <th>Shares</th>
+            <th>Value</th>
+            <th></th>
+          </tr>
+        </thead>
+      <tbody></tbody>      
       </table>
     </div>
 </body>
