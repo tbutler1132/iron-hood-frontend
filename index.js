@@ -87,7 +87,7 @@ const clickHandler = () => {
                 const transactionObj = {
                     user_id: 9, 
                     stock_id: stockId,
-                    transaction_type: 'Buy',
+                    transaction_type: "Buy",
                     stock_count: 1
                 } 
                 const options = {
@@ -96,7 +96,7 @@ const clickHandler = () => {
                         'Content-Type': 'application/json',
                         'accept': 'application/json'
                     },
-                    body: JSON.stringify( {transactionObj} )
+                    body: JSON.stringify(transactionObj)
                 }
 
                 fetch('http://localhost:3000/transactions/', options)
@@ -106,7 +106,7 @@ const clickHandler = () => {
 
             }
         buyTransaction()  
-            
+        getUsersStocks()
         }
 
     })
