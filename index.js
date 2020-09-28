@@ -80,14 +80,33 @@ const clickHandler = () => {
             showStockIndex()
         }
         else if (e.target.innerText === 'Buy'){
-            const button = e.target
-            const stockId = button.parentElement.dataset.id
-            const findStock = () => {
-                fetch('http://localhost:3000/stocks/' + stockId)
+            const stockIdString = e.target.parentElement.dataset.id
+            const stockId = parseInt(stockIdString)
+            const buyTransaction = () =>{
+
+                const transactionObj = {
+                    user_id: 9, 
+                    stock_id: stockId,
+                    transaction_type: 'Buy',
+                    stock_count: 1
+                } 
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify( {transactionObj} )
+                }
+
+                fetch('http://localhost:3000/transactions/', options)
                 .then(response => response.json())
-                .then(stock => buyStock(stock))
+                .then(transaction => console.log(transaction))
+                
+
             }
-            findStock()
+        buyTransaction()  
+            
         }
 
     })
