@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function(e){
 const header = document.querySelector('.header')
+let stocks = []
 //Home Page
 
 const renderStocks = (portfolio) => {
@@ -77,16 +78,6 @@ const clickHandler = () => {
         if (e.target.matches('#buy-button')){
             header.innerHTML = `
             <h1> Purchase </h1>
-            <div class="container">
-            <div id="searchWrapper">
-            <input
-                type="text"
-                name="searchBar"
-                id="searchBar"
-                placeholder="search for a stock..."
-            />
-            </div>
-  </div>
             `
             showStockIndex()
         }
@@ -124,7 +115,26 @@ const clickHandler = () => {
 }
 
 // Update User Portfolio
+const stocksArray = () =>{
+    fetch('http://localhost:3000/stocks')
+    .then(response => response.json())
+    .then(stocks=> filterStocks(stocks))
+}
+stocksArray()
 
+const filterStocks = (allStocks) => {
+    const searchBar = document.querySelector('#searchBar')
+    searchBar.addEventListener('keyup', e => {
+        const input = e.target.value.toLowerCase()
+        
+        const filteredStocks = allStocks.filter(stock => {
+            return stock.company_name.toLowerCase().includes(input) || stock.ticker.toLowerCase().includes(input)
+        })
+        let tableRows = document.querySelectorAll('.table-row')
+        tableRows.forEach (row => {row.remove()})
+        renderStocks(filteredStocks)
+    })
+}
 
 
 
