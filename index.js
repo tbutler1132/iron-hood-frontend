@@ -1,10 +1,9 @@
 //
 
 document.addEventListener('DOMContentLoaded', function(e){
-header = document.querySelector('h1')
-
-//Home Page
-
+    const header = document.querySelector('.header')
+    //Home Page   
+    
 const renderStocks = (portfolio) => {
     portfolio.forEach(stockObj => {
         renderStock(stockObj)
@@ -22,7 +21,7 @@ const renderStock = (stockObj) => {
         <td id='price'>${stockObj.price}</td>
         <td id="shares"> 10 </td>
         <td id='holdings'> shares * price </td>
-        <td data-id='${stockObj.id}'button class="sell-button">Sell</button></td>
+        <td data-id='${stockObj.id}'<button class="sell-button">Sell</button></td>
     `
     const shares = stockRow.querySelector('#shares').textContent
     const price = stockRow.querySelector('#price').textContent
@@ -34,7 +33,7 @@ const renderStock = (stockObj) => {
 }
 
 const getUsersStocks = () =>{
-    fetch('http://localhost:3000/users/29')
+    fetch('http://localhost:3000/users/34')
     .then(response => response.json())
     .then(user => renderStocks(user.stocks))
 }
@@ -57,7 +56,7 @@ const showStockIndex = () =>{
             const row = document.querySelectorAll('.table-row')
             row.forEach(row => {
             const sellButtons = row.children[5]
-            sellButtons.innerHTML = '<button> Buy </button>' })
+            sellButtons.innerHTML = '<button class="btn btn-success"> Buy </button>' })
             // sellButtons.forEach(button => {button.textContent = "Buy"})
         }
         changeToBuyBotton() 
@@ -78,7 +77,9 @@ const showStockIndex = () =>{
 const clickHandler = () => {
     document.addEventListener('click', function(e){
         if (e.target.matches('#buy-button')){
-            header.textContent = "Search"
+            header.innerHTML = `
+            <h1> Purchase </h1>
+            `
             showStockIndex()
         }
         else if (e.target.innerText === 'Buy'){
@@ -87,7 +88,7 @@ const clickHandler = () => {
             const buyTransaction = () =>{
 
                 const transactionObj = {
-                    user_id: 29, 
+                    user_id: 34, 
                     stock_id: stockId,
                     transaction_type: "Buy",
                     stock_count: 1
@@ -101,7 +102,7 @@ const clickHandler = () => {
                     body: JSON.stringify(transactionObj)
                 }
 
-                fetch('http://localhost:3000/transactions/', options)
+                fetch('http://localhost:3000/transactions', options)
                 .then(response => response.json())
                 .then(transaction => console.log(transaction))
                 
@@ -114,6 +115,9 @@ const clickHandler = () => {
     })
 }
 
+
+
+    
 
 // Update User Portfolio
 
