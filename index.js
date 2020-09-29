@@ -1,6 +1,8 @@
+// A user can only have one of each stock
+
 document.addEventListener('DOMContentLoaded', function(e){
 const header = document.querySelector('.header')
-let stocks = []
+
 //Home Page
     
 const renderStocks = (portfolio) => {
@@ -20,8 +22,11 @@ const renderStock = (stockObj) => {
         <td id='price'>${stockObj.price}</td>
         <td id="shares"> 10 </td>
         <td id='holdings'> shares * price </td>
-        <td data-id='${stockObj.id}'<button class="sell-button">Sell</button></td>
-    `
+        <td data-id='${stockObj.id}'</td>
+    `       
+    const button = stockRow.lastElementChild
+    button.innerHTML = `<button class="sell-button btn btn-danger">Sell</button>`
+    console.log(button)
     const shares = stockRow.querySelector('#shares').textContent
     const price = stockRow.querySelector('#price').textContent
     const holdings = shares * price
@@ -32,7 +37,7 @@ const renderStock = (stockObj) => {
 }
 
 const getUsersStocks = () =>{
-    fetch('http://localhost:3000/users/34')
+    fetch('http://localhost:3000/users/49')
     .then(response => response.json())
     .then(user => renderStocks(user.stocks))
 }
@@ -54,8 +59,8 @@ const showStockIndex = () =>{
         const changeToBuyBotton = () =>{
             const row = document.querySelectorAll('.table-row')
             row.forEach(row => {
-            const sellButtons = row.children[5]
-            sellButtons.innerHTML = '<button class="btn btn-success"> Buy </button>' })
+            const buttons = row.children[5]
+            buttons.innerHTML = '<button class="btn btn-success"> Buy </button>' })
             // sellButtons.forEach(button => {button.textContent = "Buy"})
         }
         changeToBuyBotton() 
@@ -87,7 +92,7 @@ const clickHandler = () => {
             const buyTransaction = () =>{
 
                 const transactionObj = {
-                    user_id: 34, 
+                    user_id: 49, 
                     stock_id: stockId,
                     transaction_type: "Buy",
                     stock_count: 1
@@ -107,8 +112,9 @@ const clickHandler = () => {
                 
 
             }
-        buyTransaction()  
-        getUsersStocks()
+        buyTransaction()
+          
+        showStockIndex()
         }
 
     })
