@@ -1,3 +1,5 @@
+//
+
 document.addEventListener('DOMContentLoaded', function(e){
 header = document.querySelector('h1')
 
@@ -32,7 +34,7 @@ const renderStock = (stockObj) => {
 }
 
 const getUsersStocks = () =>{
-    fetch('http://localhost:3000/users/9')
+    fetch('http://localhost:3000/users/29')
     .then(response => response.json())
     .then(user => renderStocks(user.stocks))
 }
@@ -85,7 +87,7 @@ const clickHandler = () => {
             const buyTransaction = () =>{
 
                 const transactionObj = {
-                    user_id: 9, 
+                    user_id: 29, 
                     stock_id: stockId,
                     transaction_type: "Buy",
                     stock_count: 1
