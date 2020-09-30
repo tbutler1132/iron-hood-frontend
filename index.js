@@ -1,9 +1,23 @@
 // A user can only have one of each stock
 
-document.addEventListener('DOMContentLoaded', function(e){
-const header = document.querySelector('.header')
 
+
+
+
+document.addEventListener('DOMContentLoaded', function(e){
+    const header = document.querySelector('.header')
+    
 //Home Page
+
+const findHomePage = () => {
+    const home = document.querySelector('.home-page')
+    home.innerHTML = `
+    <h3>Sign In</h3><br>
+    <form><input type="text" id="fname" name="fname"></form>
+    `
+}
+
+findHomePage()
     
 const renderStocks = (portfolio) => {
     portfolio.forEach(stockObj => {
@@ -26,7 +40,6 @@ const renderStock = (stockObj) => {
     `       
     const button = stockRow.lastElementChild
     button.innerHTML = `<button class="sell-button btn btn-danger">Sell</button>`
-    console.log(button)
     const shares = stockRow.querySelector('#shares').textContent
     const price = stockRow.querySelector('#price').textContent
     const holdings = shares * price
@@ -50,7 +63,6 @@ const showStockIndex = () =>{
         tableRows = document.querySelectorAll('.table-row')
         tableRows.forEach (row => {row.remove()})
     }
-
 
     const renderStocks = (stockCollection) => {
         stockCollection.forEach(stockObj => {
@@ -87,6 +99,7 @@ const clickHandler = () => {
             showStockIndex()
         }
         else if (e.target.innerText === 'Buy'){
+            buyModal()
             const stockIdString = e.target.parentElement.dataset.id
             const stockId = parseInt(stockIdString)
             const buyTransaction = () =>{
@@ -108,13 +121,40 @@ const clickHandler = () => {
 
                 fetch('http://localhost:3000/transactions', options)
                 .then(response => response.json())
-                .then(transaction => console.log(transaction))
+                // .then(transaction => console.log(transaction))
                 
 
             }
+
+            const updateBalance = () => {
+
+                let userBalance = document.querySelector('.balance').textContent
+                const balanceInt = parseInt(userBalance)
+                const purchaseValue = e.target.parentElement.parentElement.children[4].textContent
+                const newBalance = userBalance - purchaseValue
+                userBalance = newBalance
+                console.log(userBalance)
+
+                const balanceOptions = {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify({balance: userBalance})
+                }
+
+                fetch('http://localhost:3000/users/54', balanceOptions)
+                .then(response => response.json())
+                .then(user => console.log(user))
+
+            }
+                
+                
+
         buyTransaction()
-          
         showStockIndex()
+        updateBalance()  
         }
 
     })
@@ -149,7 +189,27 @@ const filterStocks = (allStocks) => {
 
 
 
-
+// Modal
+const buyModal = () =>{
+    const modalDiv = document.createElement('div')
+    modalDiv.innerHTML = `
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>Purchase</h2>
+        </div>
+        <div class="modal-body">
+            <p>Some text in the Modal Body</p>
+            <p>Some other text...</p>
+        </div>
+        <div class="modal-footer">
+            <h3>Ironhood</h3>
+        </div>
+    </div>
+    `
+    const body = document.querySelector('body')
+    body.append(modalDiv)
+}
 
 
 
