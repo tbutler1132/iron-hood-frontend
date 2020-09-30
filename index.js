@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function(e){
     
 //Home Page
 
-// const logInFlow = () => {
+// const getUsers = () => {
 //     const home = document.querySelector('.home-page')
 //     home.innerHTML = `
 //     <h3>Sign In</h3><br>
@@ -20,12 +20,25 @@ document.addEventListener('DOMContentLoaded', function(e){
 //     const logInForm = document.querySelector('form')
 //     logInForm.addEventListener('submit', function(e){
 //         e.preventDefault()
-//         const nameInput = document.querySelector('#name').value
-//         console.log(nameInput)
+        
+//     const nameInput = document.querySelector('#name').value
+    
+//     fetch('http://localhost:3000/users')
+//     .then(response => response.json())
+//     .then(users =>{
+//         const filteredUsers = users.filter(user => {
+//             return user.name.includes(nameInput)
+//         })
+//         const currentUser = filteredUsers[0].id
+//         const body = document.querySelector('body')
+//         body.dataset.id = currentUser
+//         console.log(body)
+//         })
 //     })
 // }
 
-// logInFlow()
+// getUsers()
+
     
 const renderStocks = (portfolio) => {
     portfolio.forEach(stockObj => {
@@ -58,9 +71,13 @@ const renderStock = (stockObj) => {
 }
 
 const getUsersStocks = () =>{
-    fetch('http://localhost:3000/users/54')
+    fetch('http://localhost:3000/users/59')
     .then(response => response.json())
-    .then(user => renderStocks(user.holdings))
+    .then(user =>{ 
+        renderStocks(user.holdings)
+        const balance = document.querySelector('.balance')
+        balance.innerHTML = `${user.balance}`
+    })
 }
 
 //Stocks page
@@ -116,41 +133,50 @@ const clickHandler = () => {
             showStockIndex()
         }
         else if (e.target.innerText === 'Buy'){
-            // buyModal()
+            
             const stockIdString = e.target.parentElement.dataset.id
             const stockData = e.target.parentElement
             const holdings = stockData.previousElementSibling.textContent
-            const stockValue = parseInt(holdings)
-            
-            
-            const userBalance = parseInt(document.querySelector('.balance').textContent.split(' ')[2])
-            const newBalance = userBalance - stockValue
-
             const stockId = parseInt(stockIdString)
-            header.innerHTML = `
-            <h1> Portfolio </h1>
-            `
             
-            const options = {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'accept': 'application/json'
-                },
-                body: JSON.stringify({balance: newBalance})
-            }
-            fetch('http://localhost:3000/users/54' , options)
-            .then(response => response.json())
-            .then(newBalance => {
+            
+            const updateBalance = () =>{
+                let stockValue = parseInt(holdings)
+                const balanceString = document.querySelector('.balance').textContent
+                console.log(balanceString)
+                let userBalance = parseInt(balanceString)
+                let newBalance = userBalance - stockValue
                 const balance = document.querySelector('.balance')
-                balance.textContent = `Balance: ${newBalance.balance}`
+                balance.textContent = `${newBalance}`
+
                 
-            })
+
+                header.innerHTML = `
+                <h1> Portfolio </h1>
+                `
+                
+                const options = {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify({balance: newBalance})
+                }
+                fetch('http://localhost:3000/users/59' , options)
+                .then(response => response.json())
+                // .then(newBalance => {
+                //     const balance = document.querySelector('.balance')
+                //     balance.textContent = `Balance: ${newBalance.balance}`
+                    
+                // })
+            }
+
     
             const buyTransaction = () =>{
 
                 const transactionObj = {
-                    user_id: 54, 
+                    user_id: 59, 
                     stock_id: stockId,
                     transaction_type: "Buy",
                     stock_count: 1
@@ -172,10 +198,15 @@ const clickHandler = () => {
                     getUsersStocks(transaction)
                 })
                 
-
+                
             }
 
-        buyTransaction()
+        const numberOfStocksBought = () => {
+            
+        }    
+            
+            updateBalance()
+            buyTransaction()
         }
     })
 }
