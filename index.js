@@ -96,10 +96,19 @@ const showStockIndex = () =>{
     getStocks()
 }
 
-//Click Handler
+    //Click Handler
+    const clearTable = () => {
+        tableRows = document.querySelectorAll('.table-row')
+        tableRows.forEach (row => {row.remove()})
+    }
 
 const clickHandler = () => {
     document.addEventListener('click', function(e){
+        if(e.target.innerText === 'IronHood //'){
+            clearTable()
+            header.innerHTML = `<h1> Portfolio </h1>`
+            getUsersStocks()
+    }
         if (e.target.matches('#buy-button')){
             header.innerHTML = `
             <h1> Purchase </h1>
@@ -107,9 +116,37 @@ const clickHandler = () => {
             showStockIndex()
         }
         else if (e.target.innerText === 'Buy'){
-            buyModal()
+            // buyModal()
             const stockIdString = e.target.parentElement.dataset.id
+            const stockData = e.target.parentElement
+            const holdings = stockData.previousElementSibling.textContent
+            const stockValue = parseInt(holdings)
+            
+            
+            const userBalance = parseInt(document.querySelector('.balance').textContent.split(' ')[2])
+            const newBalance = userBalance - stockValue
+
             const stockId = parseInt(stockIdString)
+            header.innerHTML = `
+            <h1> Portfolio </h1>
+            `
+            
+            const options = {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'accept': 'application/json'
+                },
+                body: JSON.stringify({balance: newBalance})
+            }
+            fetch('http://localhost:3000/users/54' , options)
+            .then(response => response.json())
+            .then(newBalance => {
+                const balance = document.querySelector('.balance')
+                balance.textContent = `Balance: ${newBalance.balance}`
+                
+            })
+    
             const buyTransaction = () =>{
 
                 const transactionObj = {
@@ -127,17 +164,19 @@ const clickHandler = () => {
                     body: JSON.stringify(transactionObj)
                 }
 
-                fetch('http://localhost:3000/transactions', options)
+                fetch('http://localhost:3000/transactions/', options)
                 .then(response => response.json())
-                // .then(transaction => console.log(transaction))
+                .then(transaction => {
+                    tableRows = document.querySelectorAll('.table-row')
+                    tableRows.forEach (row => {row.remove()})
+                    getUsersStocks(transaction)
+                })
                 
 
             }
 
         buyTransaction()
-        showStockIndex()
         }
-
     })
 }
 
@@ -164,6 +203,11 @@ const filterStocks = (allStocks) => {
         let tableRows = document.querySelectorAll('.table-row')
         tableRows.forEach (row => {row.remove()})
         renderStocks(filteredStocks)
+        header.innerHTML = `<h1> Purchase </h1>`
+        const row = document.querySelectorAll('.table-row')
+            row.forEach(row => {
+            const buttons = row.children[5]
+            buttons.innerHTML = '<button class="btn btn-success"> Buy </button>' })
     })
 }
 
