@@ -37,9 +37,9 @@ const renderStock = (stockObj) => {
 }
 
 const getUsersStocks = () =>{
-    fetch('http://localhost:3000/users/49')
+    fetch('http://localhost:3000/users/54')
     .then(response => response.json())
-    .then(user => renderStocks(user.stocks))
+    .then(user => renderStocks(user.holdings))
 }
 
 //Stocks page
@@ -92,7 +92,7 @@ const clickHandler = () => {
             const buyTransaction = () =>{
 
                 const transactionObj = {
-                    user_id: 49, 
+                    user_id: 54, 
                     stock_id: stockId,
                     transaction_type: "Buy",
                     stock_count: 1
