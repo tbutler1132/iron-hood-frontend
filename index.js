@@ -238,7 +238,7 @@ const filterStocks = (allStocks) => {
 
 
 
-
+//
 //Call functions
 getUsersStocks()
 clickHandler()
