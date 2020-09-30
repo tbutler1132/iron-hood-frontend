@@ -9,15 +9,23 @@ document.addEventListener('DOMContentLoaded', function(e){
     
 //Home Page
 
-const findHomePage = () => {
-    const home = document.querySelector('.home-page')
-    home.innerHTML = `
-    <h3>Sign In</h3><br>
-    <form><input type="text" id="fname" name="fname"></form>
-    `
-}
+// const logInFlow = () => {
+//     const home = document.querySelector('.home-page')
+//     home.innerHTML = `
+//     <h3>Sign In</h3><br>
+//     <form><input type="text" id="name" name="fname"><br>
+//     <input type="submit" value="Submit" class="btn btn-success">
+//     </form>
+//     `
+//     const logInForm = document.querySelector('form')
+//     logInForm.addEventListener('submit', function(e){
+//         e.preventDefault()
+//         const nameInput = document.querySelector('#name').value
+//         console.log(nameInput)
+//     })
+// }
 
-findHomePage()
+// logInFlow()
     
 const renderStocks = (portfolio) => {
     portfolio.forEach(stockObj => {
@@ -126,35 +134,8 @@ const clickHandler = () => {
 
             }
 
-            const updateBalance = () => {
-
-                let userBalance = document.querySelector('.balance').textContent
-                const balanceInt = parseInt(userBalance)
-                const purchaseValue = e.target.parentElement.parentElement.children[4].textContent
-                const newBalance = userBalance - purchaseValue
-                userBalance = newBalance
-                console.log(userBalance)
-
-                const balanceOptions = {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'accept': 'application/json'
-                    },
-                    body: JSON.stringify({balance: userBalance})
-                }
-
-                fetch('http://localhost:3000/users/54', balanceOptions)
-                .then(response => response.json())
-                .then(user => console.log(user))
-
-            }
-                
-                
-
         buyTransaction()
         showStockIndex()
-        updateBalance()  
         }
 
     })
@@ -190,26 +171,26 @@ const filterStocks = (allStocks) => {
 
 
 // Modal
-const buyModal = () =>{
-    const modalDiv = document.createElement('div')
-    modalDiv.innerHTML = `
-    <div class="modal-content">
-        <div class="modal-header">
-            <span class="close">&times;</span>
-            <h2>Purchase</h2>
-        </div>
-        <div class="modal-body">
-            <p>Some text in the Modal Body</p>
-            <p>Some other text...</p>
-        </div>
-        <div class="modal-footer">
-            <h3>Ironhood</h3>
-        </div>
-    </div>
-    `
-    const body = document.querySelector('body')
-    body.append(modalDiv)
-}
+// const buyModal = () =>{
+//     const modalDiv = document.createElement('div')
+//     modalDiv.innerHTML = `
+//     <div class="modal-content">
+//         <div class="modal-header">
+//             <span class="close">&times;</span>
+//             <h2>Purchase</h2>
+//         </div>
+//         <div class="modal-body">
+//             <p>Some text in the Modal Body</p>
+//             <p>Some other text...</p>
+//         </div>
+//         <div class="modal-footer">
+//             <h3>Ironhood</h3>
+//         </div>
+//     </div>
+//     `
+//     const body = document.querySelector('body')
+//     body.append(modalDiv)
+// }
 
 
 
