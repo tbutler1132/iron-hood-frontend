@@ -51,11 +51,12 @@ const renderStock = (stockObj) => {
     holdingsTable = document.querySelector('tbody')
     stockRow = document.createElement('tr')
     stockRow.classList = 'table-row'
+    // debugger
     stockRow.innerHTML = `
         <td>${stockObj.company_name}</td>
         <td>${stockObj.ticker}</td>
         <td id='price'>${stockObj.price}</td>
-        <td id="shares"> 1 </td>
+        <td id="shares"> ${stockObj.totals[0].count} </td>
         <td id='holdings'> shares * price </td>
         <td data-id='${stockObj.id}'</td>
     `       
@@ -71,10 +72,10 @@ const renderStock = (stockObj) => {
 }
 
 const getUsersStocks = () =>{
-    fetch('http://localhost:3000/users/64')
+    fetch('http://localhost:3000/users/79 ')
     .then(response => response.json())
     .then(user =>{ 
-        renderStocks(user.holdings)
+        renderStocks(user.purchased_stocks)
         const balance = document.querySelector('.balance')
         balance.innerHTML = `${user.balance}`
     })
@@ -133,7 +134,8 @@ const clickHandler = () => {
             showStockIndex()
         }
         else if (e.target.innerText === 'Buy'){
-            
+            const oldCount = e.target.parentElement.parentElement.children[3].textContent
+            const newCount = parseInt(oldCount) + 1
             const stockIdString = e.target.parentElement.dataset.id
             const stockData = e.target.parentElement
             const holdings = stockData.previousElementSibling.textContent
@@ -162,7 +164,7 @@ const clickHandler = () => {
                     },
                     body: JSON.stringify({balance: newBalance})
                 }
-                fetch('http://localhost:3000/users/64' , options)
+                fetch('http://localhost:3000/users/79' , options)
                 .then(response => response.json())
                 // .then(newBalance => {
                 //     const balance = document.querySelector('.balance')
@@ -175,7 +177,7 @@ const clickHandler = () => {
             const buyTransaction = () =>{
 
                 const transactionObj = {
-                    user_id: 64, 
+                    user_id: 79 , 
                     stock_id: stockId,
                     transaction_type: "Buy",
                     stock_count: 10
@@ -200,10 +202,10 @@ const clickHandler = () => {
                 
             }
 
-            const numberOfStocksBought = (id) => {
+            const numberOfStocksBought = (userId) => {
                 
                 const totalObj = {
-                    user_id: id,
+                    user_id: userId,
                     stock_id: stockId,
                     count: 1
                 }
@@ -223,19 +225,23 @@ const clickHandler = () => {
                         'Content-Type': 'application/json',
                         'accept': 'application/json'
                     },
-                    body: JSON.stringify({count: 54}) 
+                    body: JSON.stringify({count: newCount }) 
                 }
 
-                fetch('http://localhost:3000/totals')
+                fetch('http://localhost:3000/users/' + userId)
                 .then(response => response.json())
-                .then(totals => {
-                    const stocks = totals.map(total => total.stock_id)
+                .then(user => {
+                    const stocks = user.totals.map(total => total.stock_id)
                     if (stocks.includes(stockId)){
-                        const wantedTotal = totals.find(total => total.stock_id === stockId)
+                        const wantedTotal = user.totals.find(total => total.stock_id === stockId)
                         const patchId = wantedTotal.id
                         fetch('http://localhost:3000/totals/' + patchId, patchOptions)
                         .then(response => response.json())
-                        .then(total => console.log(total))
+                        // .then(total => {
+                        //     tableRows = document.querySelectorAll('.table-row')
+                        //     tableRows.forEach (row => {row.remove()})
+                        //     getUsersStocks(total)
+                        // })
                     } 
                     else {
                         fetch('http://localhost:3000/totals', postOptions)
@@ -249,7 +255,7 @@ const clickHandler = () => {
             
             updateBalance()
             buyTransaction()
-            numberOfStocksBought(64)
+            numberOfStocksBought(79)
         }
     })
 }
