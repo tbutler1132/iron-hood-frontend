@@ -104,7 +104,7 @@ const renderStock = (stockObj) => {
 }
 
 const getUsersStocks = () =>{
-    fetch('http://localhost:3000/users/89 ')
+    fetch('http://localhost:3000/users/94 ')
     .then(response => response.json())
     .then(user =>{ 
         renderStocks(user.purchased_stocks)
@@ -206,7 +206,7 @@ const clickHandler = () => {
                     },
                     body: JSON.stringify({balance: newBalance})
                 }
-                fetch('http://localhost:3000/users/89' , options)
+                fetch('http://localhost:3000/users/94' , options)
                 .then(response => response.json())
                 // .then(newBalance => {
                 //     const balance = document.querySelector('.balance')
@@ -219,7 +219,7 @@ const clickHandler = () => {
             const buyTransaction = () =>{
 
                 const transactionObj = {
-                    user_id: 89 , 
+                    user_id: 94 , 
                     stock_id: stockId,
                     transaction_type: "Buy",
                     stock_count: 10
@@ -286,7 +286,7 @@ const clickHandler = () => {
                     else {
                         fetch('http://localhost:3000/totals', postOptions)
                         .then(response => response.json())
-                        .then(total => console.log(total))
+                        .then(total => getUsersStocks())
 
                     }
                  
@@ -294,7 +294,7 @@ const clickHandler = () => {
             }    
             decreaseBalance()
             buyTransaction()
-            numberOfStocksBought(89)
+            numberOfStocksBought(94)
         
   
         } else if (e.target.innerText === 'Sell'){
@@ -338,7 +338,7 @@ const clickHandler = () => {
                     },
                     body: JSON.stringify({balance: newBalance})
                 }
-                fetch('http://localhost:3000/users/89' , options)
+                fetch('http://localhost:3000/users/94' , options)
                 .then(response => response.json())
                 // .then(newBalance => {
                 //     const balance = document.querySelector('.balance')
@@ -351,7 +351,7 @@ const clickHandler = () => {
             const sellTransaction = () =>{
 
                 const transactionObj = {
-                    user_id: 89 , 
+                    user_id: 94, 
                     stock_id: stockId,
                     transaction_type: "Sell",
                     stock_count: 1
@@ -424,7 +424,7 @@ const clickHandler = () => {
             
             decreaseBalance()
             sellTransaction()
-            numberOfStocksSold(89)
+            numberOfStocksSold(94)
 
         }
     })
