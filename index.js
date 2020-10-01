@@ -55,7 +55,7 @@ const renderStock = (stockObj) => {
         <td>${stockObj.company_name}</td>
         <td>${stockObj.ticker}</td>
         <td id='price'>${stockObj.price}</td>
-        <td id="shares"> 10 </td>
+        <td id="shares"> 1 </td>
         <td id='holdings'> shares * price </td>
         <td data-id='${stockObj.id}'</td>
     `       
@@ -71,7 +71,7 @@ const renderStock = (stockObj) => {
 }
 
 const getUsersStocks = () =>{
-    fetch('http://localhost:3000/users/59')
+    fetch('http://localhost:3000/users/64')
     .then(response => response.json())
     .then(user =>{ 
         renderStocks(user.holdings)
@@ -143,7 +143,6 @@ const clickHandler = () => {
             const updateBalance = () =>{
                 let stockValue = parseInt(holdings)
                 const balanceString = document.querySelector('.balance').textContent
-                console.log(balanceString)
                 let userBalance = parseInt(balanceString)
                 let newBalance = userBalance - stockValue
                 const balance = document.querySelector('.balance')
@@ -163,7 +162,7 @@ const clickHandler = () => {
                     },
                     body: JSON.stringify({balance: newBalance})
                 }
-                fetch('http://localhost:3000/users/59' , options)
+                fetch('http://localhost:3000/users/64' , options)
                 .then(response => response.json())
                 // .then(newBalance => {
                 //     const balance = document.querySelector('.balance')
@@ -176,10 +175,10 @@ const clickHandler = () => {
             const buyTransaction = () =>{
 
                 const transactionObj = {
-                    user_id: 59, 
+                    user_id: 64, 
                     stock_id: stockId,
                     transaction_type: "Buy",
-                    stock_count: 1
+                    stock_count: 10
                 } 
                 const options = {
                     method: 'POST',
@@ -201,15 +200,69 @@ const clickHandler = () => {
                 
             }
 
-        const numberOfStocksBought = () => {
-            
-        }    
+            const numberOfStocksBought = (id) => {
+                
+                const totalObj = {
+                    user_id: id,
+                    stock_id: stockId,
+                    count: 1
+                }
+
+                const postOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify(totalObj) 
+                }
+
+                const patchOptions = {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify({count: 54}) 
+                }
+
+                fetch('http://localhost:3000/totals')
+                .then(response => response.json())
+                .then(totals => {
+                    const stocks = totals.map(total => total.stock_id)
+                    if (stocks.includes(stockId)){
+                        const wantedTotal = totals.find(total => total.stock_id === stockId)
+                        const patchId = wantedTotal.id
+                        fetch('http://localhost:3000/totals/' + patchId, patchOptions)
+                        .then(response => response.json())
+                        .then(total => console.log(total))
+                    } 
+                    else {
+                        fetch('http://localhost:3000/totals', postOptions)
+                        .then(response => response.json())
+                        .then(total => console.log(total))
+
+                    }
+                 
+                })
+            }    
             
             updateBalance()
             buyTransaction()
+            numberOfStocksBought(64)
         }
     })
 }
+
+
+
+
+
+
+getStockName = (id) => {
+    fetch('http://localhost:3000/users/' + id)
+}
+
 
 
 
@@ -274,3 +327,38 @@ const filterStocks = (allStocks) => {
 getUsersStocks()
 clickHandler()
 })
+
+
+
+// get transactions. if transaction.stock_id 
+
+//if header.textContent === 'Portfolio' && blah === stock.company_name
+    //blah blah + transaction stock count
+
+// redirect to total.id_path
+
+
+
+// GET totals
+// stocks = totals.map.totals.stock_id
+// if stocks includes stock_id
+        //pass in stock_id and patch
+// else 
+        //pass in new_obj with user_id and count
+
+// const getTotals = () => {
+//     fetch('http://localhost:3000/stocks')
+//     .then(response => response.json())
+//     .then(totals => {
+//         stocks = totals.map(total => total.stock_id)
+//         if stocks.include?(stock_id)
+//             patch
+//              options 
+//         else
+//             post    
+//     })
+
+// }
+
+
+
