@@ -51,15 +51,26 @@ const renderStock = (stockObj) => {
     holdingsTable = document.querySelector('tbody')
     stockRow = document.createElement('tr')
     stockRow.classList = 'table-row'
-    // debugger
-    stockRow.innerHTML = `
-        <td>${stockObj.company_name}</td>
-        <td>${stockObj.ticker}</td>
-        <td id='price'>${stockObj.price}</td>
-        <td id="shares"> ${stockObj.totals[0].count} </td>
-        <td id='holdings'> shares * price </td>
-        <td data-id='${stockObj.id}'</td>
-    `       
+    if (stockObj.totals[0]){
+        stockRow.innerHTML = `
+            <td>${stockObj.company_name}</td>
+            <td>${stockObj.ticker}</td>
+            <td id='price'>${stockObj.price}</td>
+            <td id="shares"> ${stockObj.totals[0].count} </td>
+            <td id='holdings'> shares * price </td>
+            <td data-id='${stockObj.id}'</td>
+        `  
+    }
+    else {
+        stockRow.innerHTML = `
+            <td>${stockObj.company_name}</td>
+            <td>${stockObj.ticker}</td>
+            <td id='price'>${stockObj.price}</td>
+            <td id="shares"> 0 </td>
+            <td id='holdings'> shares * price </td>
+            <td data-id='${stockObj.id}'</td>
+        `     
+    }         
     const button = stockRow.lastElementChild
     button.innerHTML = `<button class="sell-button btn btn-danger">Sell</button>`
     const shares = stockRow.querySelector('#shares').textContent
@@ -72,7 +83,7 @@ const renderStock = (stockObj) => {
 }
 
 const getUsersStocks = () =>{
-    fetch('http://localhost:3000/users/79 ')
+    fetch('http://localhost:3000/users/89 ')
     .then(response => response.json())
     .then(user =>{ 
         renderStocks(user.purchased_stocks)
@@ -138,16 +149,17 @@ const clickHandler = () => {
             const newCount = parseInt(oldCount) + 1
             const stockIdString = e.target.parentElement.dataset.id
             const stockData = e.target.parentElement
-            const holdings = stockData.previousElementSibling.textContent
+            const holdings = stockData.previousElementSibling.previousElementSibling.previousElementSibling.textContent
             const stockId = parseInt(stockIdString)
             
             
-            const updateBalance = () =>{
-                let stockValue = parseInt(holdings)
+            const decreaseBalance = () =>{
+                let stockPrice = parseInt(holdings)
                 const balanceString = document.querySelector('.balance').textContent
                 let userBalance = parseInt(balanceString)
-                let newBalance = userBalance - stockValue
+                let newBalance = userBalance - stockPrice
                 const balance = document.querySelector('.balance')
+                // debugger
                 balance.textContent = `${newBalance}`
 
                 
@@ -164,7 +176,7 @@ const clickHandler = () => {
                     },
                     body: JSON.stringify({balance: newBalance})
                 }
-                fetch('http://localhost:3000/users/79' , options)
+                fetch('http://localhost:3000/users/89' , options)
                 .then(response => response.json())
                 // .then(newBalance => {
                 //     const balance = document.querySelector('.balance')
@@ -177,7 +189,7 @@ const clickHandler = () => {
             const buyTransaction = () =>{
 
                 const transactionObj = {
-                    user_id: 79 , 
+                    user_id: 89 , 
                     stock_id: stockId,
                     transaction_type: "Buy",
                     stock_count: 10
@@ -232,6 +244,7 @@ const clickHandler = () => {
                 .then(response => response.json())
                 .then(user => {
                     const stocks = user.totals.map(total => total.stock_id)
+                    
                     if (stocks.includes(stockId)){
                         const wantedTotal = user.totals.find(total => total.stock_id === stockId)
                         const patchId = wantedTotal.id
@@ -253,9 +266,132 @@ const clickHandler = () => {
                 })
             }    
             
-            updateBalance()
+            decreaseBalance()
             buyTransaction()
-            numberOfStocksBought(79)
+            numberOfStocksBought(89)
+        
+  
+        } else if (e.target.innerText === 'Sell'){
+
+            const oldCount = e.target.parentElement.parentElement.children[3].textContent
+            const newCount = parseInt(oldCount) - 1
+            const stockIdString = e.target.parentElement.dataset.id
+            const stockData = e.target.parentElement
+            const holdings = stockData.previousElementSibling.previousElementSibling.previousElementSibling.textContent
+            const stockId = parseInt(stockIdString)
+            
+            
+            const decreaseBalance = () =>{
+                let stockPrice = parseInt(holdings)
+                const balanceString = document.querySelector('.balance').textContent
+                let userBalance = parseInt(balanceString)
+                let newBalance = userBalance + stockPrice
+                const balance = document.querySelector('.balance')
+                // debugger
+                balance.textContent = `${newBalance}`
+
+                
+
+                header.innerHTML = `
+                <h1> Portfolio </h1>
+                `
+                
+                const options = {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify({balance: newBalance})
+                }
+                fetch('http://localhost:3000/users/89' , options)
+                .then(response => response.json())
+                // .then(newBalance => {
+                //     const balance = document.querySelector('.balance')
+                //     balance.textContent = `Balance: ${newBalance.balance}`
+                    
+                // })
+            }
+
+    
+            const sellTransaction = () =>{
+
+                const transactionObj = {
+                    user_id: 89 , 
+                    stock_id: stockId,
+                    transaction_type: "Sell",
+                    stock_count: 1
+                } 
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify(transactionObj)
+                }
+
+                fetch('http://localhost:3000/transactions/', options)
+                .then(response => response.json())
+                .then(transaction => {
+                    tableRows = document.querySelectorAll('.table-row')
+                    tableRows.forEach (row => {row.remove()})
+                    getUsersStocks(transaction)
+                })
+                
+                
+            }
+
+            const numberOfStocksSold = (userId) => {
+                
+                // const totalObj = {
+                //     user_id: userId,
+                //     stock_id: stockId,
+                //     count: 1
+                // }
+
+                // const deleteOptions = {
+                //     method: 'DELETE',
+                // }
+
+                const patchOptions = {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify({count: newCount }) 
+                }
+
+                fetch('http://localhost:3000/users/' + userId)
+                .then(response => response.json())
+                .then(user => {
+                    const stocks = user.totals.map(total => total.stock_id)
+                    if (stocks.includes(stockId)){
+                        const wantedTotal = user.totals.find(total => total.stock_id === stockId)
+                        const patchId = wantedTotal.id
+                        fetch('http://localhost:3000/totals/' + patchId, patchOptions)
+                        .then(response => response.json())
+                        // .then(total => {
+                        //     tableRows = document.querySelectorAll('.table-row')
+                        //     tableRows.forEach (row => {row.remove()})
+                        //     getUsersStocks(total)
+                        // })
+                    } 
+                    // else {
+                    //     fetch('http://localhost:3000/totals', postOptions)
+                    //     .then(response => response.json())
+                    //     .then(total => console.log(total))
+
+                    // }
+                 
+                })
+            }    
+            
+            decreaseBalance()
+            sellTransaction()
+            numberOfStocksSold(89)
+
         }
     })
 }
