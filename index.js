@@ -60,7 +60,7 @@ const renderStock = (stockObj) => {
         <td data-id='${stockObj.id}'</td>
     `       
     const button = stockRow.lastElementChild
-    button.innerHTML = `<button class="sell-button btn btn-danger">Sell</button>`
+    button.innerHTML = `<button data-id="${stockObj.id}"class="sell-button btn btn-danger">Sell</button>`
     const shares = stockRow.querySelector('#shares').textContent
     const price = stockRow.querySelector('#price').textContent
     const holdings = shares * price
@@ -71,7 +71,7 @@ const renderStock = (stockObj) => {
 }
 
 const getUsersStocks = () =>{
-    fetch('http://localhost:3000/users/59')
+    fetch('http://localhost:3000/users/61')
     .then(response => response.json())
     .then(user =>{ 
         renderStocks(user.holdings)
@@ -136,20 +136,22 @@ const clickHandler = () => {
             
             const stockIdString = e.target.parentElement.dataset.id
             const stockData = e.target.parentElement
-            const holdings = stockData.previousElementSibling.textContent
+            const holdings = stockData.previousElementSibling
+            const shares = holdings.previousElementSibling
+            const price = shares.previousElementSibling.textContent
+            
             const stockId = parseInt(stockIdString)
             
             
-            const updateBalance = () =>{
-                let stockValue = parseInt(holdings)
+            const decreaseBalance = () =>{
+                
+                let stockPrice = parseInt(price)
                 const balanceString = document.querySelector('.balance').textContent
-                console.log(balanceString)
+                
                 let userBalance = parseInt(balanceString)
-                let newBalance = userBalance - stockValue
+                let newBalance = userBalance - stockPrice
                 const balance = document.querySelector('.balance')
                 balance.textContent = `${newBalance}`
-
-                
 
                 header.innerHTML = `
                 <h1> Portfolio </h1>
@@ -163,7 +165,7 @@ const clickHandler = () => {
                     },
                     body: JSON.stringify({balance: newBalance})
                 }
-                fetch('http://localhost:3000/users/59' , options)
+                fetch('http://localhost:3000/users/61' , options)
                 .then(response => response.json())
                 // .then(newBalance => {
                 //     const balance = document.querySelector('.balance')
@@ -172,11 +174,10 @@ const clickHandler = () => {
                 // })
             }
 
-    
             const buyTransaction = () =>{
 
                 const transactionObj = {
-                    user_id: 59, 
+                    user_id: 61, 
                     stock_id: stockId,
                     transaction_type: "Buy",
                     stock_count: 1
@@ -192,21 +193,57 @@ const clickHandler = () => {
 
                 fetch('http://localhost:3000/transactions/', options)
                 .then(response => response.json())
-                .then(transaction => {
-                    tableRows = document.querySelectorAll('.table-row')
-                    tableRows.forEach (row => {row.remove()})
-                    getUsersStocks(transaction)
-                })
-                
-                
+                header.innerHTML = `<h1> Purchase </h1>`
             }
-
-        const numberOfStocksBought = () => {
-            
-        }    
-            
-            updateBalance()
+            decreaseBalance()
             buyTransaction()
+        }
+        else if(e.target.textContent === 'Sell'){
+            const stockData = e.target.parentElement
+            
+            const holdings = stockData.previousElementSibling
+            const shares = holdings.previousElementSibling
+            const price = shares.previousElementSibling.textContent
+            const stockId = e.target.parentElement.dataset.id
+
+            const increaseBalance = () =>{
+
+                let stockPrice = parseInt(price)
+                const balanceString = document.querySelector('.balance').textContent
+                
+                let userBalance = parseInt(balanceString)
+                let newBalance = userBalance + stockPrice
+                
+                const balance = document.querySelector('.balance')
+                balance.textContent = `${newBalance}`
+
+                header.innerHTML = `
+                <h1> Portfolio </h1>
+                `
+                // const stockId = e.target.parentElement
+                // const currentHoldings = stockId.previousElementSibling
+                // const currentShares = parseInt(currentHoldings.previousElementSibling.textContent)
+                // const decreaseShares = currentShares - 1
+                // const sharesString = currentHoldings.previousElementSibling
+                // sharesString.textContent = `${decreaseShares}`
+
+                const options = {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify({balance: newBalance})
+                }
+                fetch('http://localhost:3000/users/61' , options)
+                .then(response => response.json())
+                // .then(newBalance => {
+                //     const balance = document.querySelector('.balance')
+                //     balance.textContent = `Balance: ${newBalance.balance}`
+                    
+                // })
+            }
+            increaseBalance()
         }
     })
 }
